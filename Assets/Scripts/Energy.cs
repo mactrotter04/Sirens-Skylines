@@ -6,9 +6,12 @@ public class Energy : MonoBehaviour
 {
     [SerializeField] Slider energySlider;
     [SerializeField] float EnergyMax = 100f;
-    [SerializeField] float EnergyLoss = 1f;
+    [SerializeField] float energyLoss = 0.1f;
+    [SerializeField] float energyRegain = 0.1f;
+    [SerializeField] float regenDelay = 3f;
     float CurrentEnergy;
     float tempSpeed;
+    float lastSprintTime;
 
     ThirdPersonController tpc;
 
@@ -32,8 +35,12 @@ public class Energy : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftShift) && CurrentEnergy > 0)
         {
-            CurrentEnergy -= EnergyLoss * Time.deltaTime;
+            CurrentEnergy -= energyLoss * Time.deltaTime;
             CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0f , EnergyMax);
+        }
+        else
+        {
+            CurrentEnergy += energyRegain * Time.deltaTime;
         }
     }
 
