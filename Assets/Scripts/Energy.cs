@@ -1,17 +1,23 @@
 using StarterAssets;
+using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Energy : MonoBehaviour
 {
+    [Header("Stamina Slider")]
     [SerializeField] Slider energySlider;
+
+    [Header("Stamina")]
     [SerializeField] float EnergyMax = 100f;
-    [SerializeField] float energyLoss = 0.1f;
-    [SerializeField] float energyRegain = 0.1f;
-    [SerializeField] float regenDelay = 3f;
+    [SerializeField] float energyincrements = 0.1f;
+    [SerializeField, Range(0, 1)] float unlocksprint = 0.25f;
+
     float CurrentEnergy;
     float tempSpeed;
     float lastSprintTime;
+    bool canSprint = true;
 
     ThirdPersonController tpc;
 
@@ -29,18 +35,26 @@ public class Energy : MonoBehaviour
     {
         StaminaLoss();
         UpdateEnergy();
+        
     }
 
     void StaminaLoss()
     {
-        if(Input.GetKey(KeyCode.LeftShift) && CurrentEnergy > 0)
+        if (Input.GetKey(KeyCode.LeftShift) && CurrentEnergy > 0 && canSprint)
         {
-            CurrentEnergy -= energyLoss * Time.deltaTime;
-            CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0f , EnergyMax);
+            CurrentEnergy -= energyincrements * Time.deltaTime;
         }
         else
         {
-            CurrentEnergy += energyRegain * Time.deltaTime;
+            CurrentEnergy += energyincrements * Time.deltaTime;
+        }
+        if(CurrentEnergy  <= 0)
+        {
+            canSprint = false;
+        }
+        else if (CurrentEnergy >= EnergyMax * unlocksprint)
+        {
+            canSprint = true;
         }
     }
 
