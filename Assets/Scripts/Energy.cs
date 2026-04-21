@@ -12,8 +12,8 @@ public class Energy : MonoBehaviour
 
     [Header("Stamina")]
     [SerializeField] float EnergyMax = 100f;
-    [SerializeField] float energyLoss = 20f;
-    [SerializeField] float energyRegain = 10f;
+    [SerializeField] float energyLoss = 5f;
+    [SerializeField] float energyRegain = 1f;
     [SerializeField, Range(0, 1)] float unlocksprint = 0.25f;
 
 
