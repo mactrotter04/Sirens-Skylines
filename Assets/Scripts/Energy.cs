@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor.ShaderGraph.Internal;
 
 public class Energy : MonoBehaviour
 {
@@ -11,14 +12,16 @@ public class Energy : MonoBehaviour
 
     [Header("Stamina")]
     [SerializeField] float EnergyMax = 100f;
-    [SerializeField] float energyincrements = 0.1f;
+    [SerializeField] float energyLoss = 20f;
+    [SerializeField] float energyRegain = 10f;
     [SerializeField, Range(0, 1)] float unlocksprint = 0.25f;
+
 
     float CurrentEnergy;
     float tempSpeed;
-    float lastSprintTime;
     bool canSprint = true;
 
+    StarterAssetsInputs inputs;
     ThirdPersonController tpc;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,8 +29,11 @@ public class Energy : MonoBehaviour
     {
         tpc = FindFirstObjectByType<ThirdPersonController>();
         CurrentEnergy = EnergyMax;
-        energySlider.value = CurrentEnergy;
         tempSpeed = tpc.SprintSpeed;
+
+        energySlider.value = 1f;
+        energySlider.minValue = 0f;
+        energySlider.maxValue = 1f;
     }
 
     // Update is called once per frame
@@ -35,31 +41,40 @@ public class Energy : MonoBehaviour
     {
         StaminaLoss();
         UpdateEnergy();
-        
     }
 
     void StaminaLoss()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && CurrentEnergy > 0 && canSprint)
+        float drainPerSecond = EnergyMax / energyLoss;
+        float regainPerSecond = EnergyMax / energyRegain;
+
+        bool sprintHeld = Input.GetKey(KeyCode.LeftShift);
+
+        if (sprintHeld && CurrentEnergy > 0 && canSprint)
         {
-            CurrentEnergy -= energyincrements * Time.deltaTime;
+            CurrentEnergy -= drainPerSecond * Time.deltaTime;
         }
-        else
+        else if(!sprintHeld)
         {
-            CurrentEnergy += energyincrements * Time.deltaTime;
+            CurrentEnergy += regainPerSecond * Time.deltaTime;
         }
-        if(CurrentEnergy  <= 0)
+
+        CurrentEnergy = Mathf.Clamp(CurrentEnergy, 0, EnergyMax);
+
+        if(canSprint && CurrentEnergy <= 0)
         {
             canSprint = false;
+            tpc.SprintSpeed = tpc.MoveSpeed;
         }
-        else if (CurrentEnergy >= EnergyMax * unlocksprint)
+        else if (!canSprint && CurrentEnergy >= EnergyMax * unlocksprint)
         {
             canSprint = true;
+            tpc.SprintSpeed = tempSpeed;
         }
     }
 
     void UpdateEnergy()
     {
-        energySlider.value = CurrentEnergy;
+        energySlider.value = CurrentEnergy/ EnergyMax;
     }
 }
