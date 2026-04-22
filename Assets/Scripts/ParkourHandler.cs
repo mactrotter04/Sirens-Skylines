@@ -6,10 +6,9 @@ public class ParkourHandler : MonoBehaviour
 {
     [SerializeField] float lowProbeHeight = 1f;
     [SerializeField] LayerMask climbableLayer;
-    [SerializeField] Vector3 contactDistance;
+    [SerializeField] float contactDistance;
 
     
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -40,10 +39,16 @@ public class ParkourHandler : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        Vector3 feet = transform.position;
-        Vector3 origin = feet + Vector3.up * lowProbeHeight;
+        Vector3 fwd =transform.forward;
+        fwd.y = 0f;
+
+        if (fwd.sqrMagnitude < Mathf.Epsilon) return;
+
+        fwd.Normalize();
+
+        Vector3 origin = transform.position + Vector3.up * lowProbeHeight;
 
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(origin, origin + Vector3.forward * contactDistance);
+        Gizmos.DrawLine(origin, origin + transform.forward * contactDistance);
     }
 }
