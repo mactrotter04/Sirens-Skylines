@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal.Internal;
 
 public class ParkourHandler : MonoBehaviour
 {
-    
+    [Header("Contact")]
     [SerializeField] float contactDistance;
     [SerializeField] float queueTimeOut = 1f;
 
@@ -118,10 +118,7 @@ public class ParkourHandler : MonoBehaviour
         {
             var kind = Classify(feet, fwd);
 
-            
             boxCollider = hit.collider.GetComponent<BoxCollider>();
-
-
 
             if (state == State.Idleing && inputs.jump && kind != ParkourKind.None)
             {
