@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c6ef9da4f6b9ff746b183d82bbe3ff22
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 186131
+  packageName: Croc men
+  packageVersion: 1.0
+  assetPath: Assets/Croc men/Standard_Two_Sided.shader
+  uploadId: 408825
