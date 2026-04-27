@@ -1,4 +1,5 @@
 using StarterAssets;
+using System;
 using System.Collections;
 using System.Net.NetworkInformation;
 using Unity.Collections;
@@ -13,35 +14,64 @@ public class ParkourHandler : MonoBehaviour
     [SerializeField] float contactDistance;
     [SerializeField] float queueTimeOut = 1f;
 
-    [Header("Probe Hights")]
-    [SerializeField] float feetProbeHeight = 0.5f;
-    [SerializeField] float chestProbeHeight = 1f;
-    [SerializeField] float headProbeHeight = 1.6f;
-    [SerializeField] float overheadProbeHight = 2.10f;
-    [SerializeField] float noClimbHight = 2.90f;
+    [Header("Probes")]
+    [SerializeField] float lowProbeHeight = 0.3f;
+    [SerializeField] float waistProbeHeight = 1f;
+    [SerializeField] float headProbeHeight = 1.7f;
+    [SerializeField] float overheadProbeHight = 2.6f;
+    [SerializeField] float impossibleHight = 3.2f;
+    [SerializeField] float probeSpherRadius = 0.15f;
 
     [Header("Climbing")]
     [SerializeField] LayerMask climbableLayer;
+    [SerializeField] LayerMask ObstrutionLayer;
     [SerializeField] float ledgeInset = 0.3f;
-    [SerializeField] float mantleDuration = 0.5f;
-    [SerializeField] float mediumClimbDuraion = 1f;
-    [SerializeField] float highClimbDuration = 2f;
 
     [Header("Climbing Cooldowns")]
     [SerializeField] float recoverDuration = 0.25f;
     [SerializeField] float cooldownDuration = 1f;
 
+    [Header("Trigger Peramiters")]
+    [SerializeField] float minTriggerSpeed = 6f;
+    [SerializeField] float triggerDistance = 1.2f;
+    [SerializeField] float ledgeMaxSlope = 35f;
+
+    [SerializeField] float headroomHeight = 1.8f;
+    [SerializeField] float headroomRadius = 0.35f;
+
+    [SerializeField] AnimationClip mantleClip;
+    [SerializeField] AnimationClip mediumClimbClip;
+    [SerializeField] AnimationClip highClimbClip;
+
     StarterAssetsInputs inputs;
     Animator animator;
-    State state;
     ThirdPersonController tpc;
     BoxCollider boxCollider;
     CharacterController characterController;
+    State state = State.Idleing;
+    ParkourKind activeKind = ParkourKind.None;
+    DetectionResult queuedHit;
+    Vector3 startPos, landingPos, risePoint;
+    Quaternion startRot, faceWallRot;
+    Transform cinemachineTarget;
+    Quaternion camtargetStartRot, camTargetEndRot;
 
 
-    float queuedAt;
+    float stateTimer;
+    bool lastJumpHeld;
+    bool jumpPressed;
+    float activeDuration;
+    float camTargetEndYaw;
 
 
+
+
+    struct DetectionResult
+    {
+        public ParkourKind kind;
+        public Vector3 ledgeTop;
+        public Vector3 wallNormalXZ;
+    }
 
     enum ParkourKind
     {
@@ -50,140 +80,329 @@ public class ParkourHandler : MonoBehaviour
         MediumClimb,
         HighClimb
     }
-
-    ParkourKind Queued;
-
     enum State
     {
         Idleing,
         Queued,// none mantle midclimb high
-        Exicuting,
+        Exacuting,
         Recovery,
         Cooldown
     }
 
-    int Hit(Vector3 feet, Vector3 fwd, float height) => Physics.Raycast(feet + Vector3.up * height, fwd, out RaycastHit Hit, contactDistance, climbableLayer) ? 1 : 0; //if physics raycast is true return 1 if not return 0
-
-
-
-    ParkourKind Classify(Vector3 feet, Vector3 fwd)
+    bool Probe(Vector3 feet, Vector3 fwd, float height, out RaycastHit hit)
     {
-        if (Hit(feet, fwd, feetProbeHeight) == 0) return ParkourKind.None;
-        if (Hit(feet, fwd, chestProbeHeight) == 0) return ParkourKind.Mantle;
-        if (Hit(feet, fwd, headProbeHeight) == 0) return ParkourKind.MediumClimb;
-        if (Hit(feet, fwd, overheadProbeHight) == 0) return ParkourKind.HighClimb;
-        return ParkourKind.None;
+        Vector3 origin = feet + Vector3.up * height;
+        return Physics.SphereCast(origin, probeSpherRadius, fwd, out hit, triggerDistance, climbableLayer);
     }
-
-    float Duration(ParkourKind kind) =>
-        kind switch
-        {
-            ParkourKind.Mantle => mantleDuration,
-            ParkourKind.MediumClimb => mediumClimbDuraion,
-            ParkourKind.HighClimb => highClimbDuration,
-            _ => 0f
-        };
 
     void Awake()
     {
         inputs = GetComponent<StarterAssetsInputs>();
         tpc = GetComponent<ThirdPersonController>();
         characterController = GetComponent<CharacterController>();
-    }
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
         animator = GetComponent<Animator>();
+
+        cinemachineTarget = tpc.CinemachineCameraTarget.transform;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-        ProcessRaycast();
+        jumpPressed = inputs.jump && !lastJumpHeld;
+
+        switch (state)
+        {
+            case State.Idleing:
+                TryTrigger();
+                break;
+            case State.Queued:
+                TickQueued();
+                break;
+            case State.Exacuting:
+                TickExecute();
+                break;
+            case State.Recovery:
+                stateTimer += Time.deltaTime;
+                if (stateTimer >= recoverDuration)
+                {
+                    stateTimer = 0f;
+                    state = State.Cooldown;
+                    tpc.enabled = true;
+                    inputs.jump = false;
+                    activeKind = ParkourKind.None;
+                }
+                break;
+            case State.Cooldown:
+                stateTimer += Time.deltaTime;
+                if (stateTimer >= cooldownDuration)
+                {
+                    stateTimer = 0f;
+                    state = State.Idleing;
+                }
+                break;
+        }
+
+        lastJumpHeld = inputs.jump;
     }
 
-    void ProcessRaycast()
-    { 
-        Vector3 fwd = transform.forward;
+    void TryTrigger()
+    {
+        if (!tpc.Grounded) return;
+        if (!jumpPressed) return;
+
+        Vector3 vel = characterController.velocity;
+        vel.y = 0f;
+        if (vel.magnitude < minTriggerSpeed) return;
+
+        if (!TryDetect(out DetectionResult hit)) return;
+
+        inputs.jump = false;
+        queuedHit = hit;
+        stateTimer = 0f;
+        state = State.Queued;
+    }
+
+    bool TryDetect(out DetectionResult result)
+    {
+        result = default;
+
         Vector3 feet = transform.position;
+        Vector3 fwd = transform.forward;
         fwd.y = 0f;
-        if (fwd.sqrMagnitude < Mathf.Epsilon)
-            return;
+        if (fwd.sqrMagnitude < 0.0001f)
+        {
+            return false;
+        }
         fwd.Normalize();
 
-        Vector3 origin = feet + Vector3.up * feetProbeHeight;
-        if (Physics.Raycast(origin, fwd, out RaycastHit hit, contactDistance, climbableLayer))
+        bool waist = Probe(feet, fwd, waistProbeHeight, out RaycastHit waistHit);
+        bool head = Probe(feet, fwd, headProbeHeight, out RaycastHit headHit);
+        bool overhead = Probe(feet, fwd, overheadProbeHight, out RaycastHit overheadHit);
+        bool impossible = Probe(feet, fwd, impossibleHight, out RaycastHit impossibleHit);
+
+        if (impossible) return false;
+        if (!waist) return false;
+
+        Vector3 wallNoraml = waistHit.normal;
+        wallNoraml.y = 0f;
+
+        if (wallNoraml.sqrMagnitude < 0.0001f)
         {
-            var kind = Classify(feet, fwd);
+            return false;
+        }
 
-            boxCollider = hit.collider.GetComponent<BoxCollider>();
+        wallNoraml.Normalize();
 
-            if (state == State.Idleing && inputs.jump && kind != ParkourKind.None)
+        Vector3 ledgeProbeOrigin = waistHit.point + fwd * ledgeInset + Vector3.up * (impossibleHight + 0.5f);
+
+        if (!Physics.Raycast(ledgeProbeOrigin, Vector3.down, out RaycastHit ledgeHit, 4f, climbableLayer))
+        {
+            return false;
+        }
+
+        if (Vector3.Angle(ledgeHit.normal, Vector3.up) > ledgeMaxSlope)
+        {
+            return false;
+        }
+
+        ParkourKind kind;
+
+        if (overhead)
+        {
+            kind = ParkourKind.HighClimb;
+        }
+        else if (head)
+        {
+            kind = ParkourKind.MediumClimb;
+        }
+        else
+        {
+            kind = ParkourKind.Mantle;
+        }
+
+        if (!HasHeadroom(ledgeHit.point, wallNoraml))
+        {
+            return false;
+        }
+        if (!HasVerticleClerance(feet, ledgeHit.point.y))
+        {
+            return false;
+        }
+
+        result.kind = kind;
+        result.ledgeTop = ledgeHit.point;
+        result.wallNormalXZ = wallNoraml;
+        return true;
+    }
+
+    void TickQueued()
+    {
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= queueTimeOut)
+        {
+            state = State.Idleing;
+            stateTimer = 0f;
+            return;
+        }
+
+        if (TryDetect(out DetectionResult fresh))
+        {
+            queuedHit = fresh;
+            EnterExecute(fresh);
+        }
+    }
+
+    void TickExecute()
+    {
+        stateTimer += Time.deltaTime;
+        float progress = Mathf.Clamp01(stateTimer / activeDuration);
+
+        Vector3 pos;
+
+        if (activeKind == ParkourKind.Mantle)
+        {
+            float easedProgress = Mathf.SmoothStep(0f, 1f, progress);
+            pos = Vector3.Lerp(startPos, landingPos, easedProgress);
+            pos.y += MathF.Sin(progress * MathF.PI) * 0.15f;
+        }
+        else
+        {
+            const float phase1 = 0.5f;
+
+            if (progress < phase1)
             {
-                state = State.Queued;
-                Queued = kind;
-                queuedAt = Time.time;
-                inputs.jump = false;
-                Debug.Log($"Queued {kind} at {queuedAt}");
+                pos = Vector3.Lerp(startPos, risePoint, progress / phase1);
+            }
+            else
+            {
+                pos = Vector3.Lerp(risePoint, landingPos, (progress - phase1) / (1f - phase1));
             }
         }
 
-        if(state == State.Queued && Time.time - queuedAt > queueTimeOut)
-        {
-            state = State.Idleing;
-            Debug.Log($"Queue timed out back to tidle after {Time.time - queuedAt} seconds");
-        }
+        transform.position = pos;
+        transform.rotation = Quaternion.Slerp(startRot, faceWallRot, progress);
 
-        if (state == State.Queued && Physics.Raycast(origin, fwd, out RaycastHit hit2, contactDistance, climbableLayer))
+        cinemachineTarget.rotation = Quaternion.Slerp(camtargetStartRot, camTargetEndRot, progress);
+
+        if (progress >= 1f)
         {
-            Vector3 top = hit2.point + fwd * ledgeInset + Vector3.up * chestProbeHeight;
-            StartCoroutine(StartClimb(top, Duration(Queued)));
+            transform.position = landingPos;
+            transform.rotation = faceWallRot;
+            cinemachineTarget.rotation = camTargetEndRot;
+            tpc._cinemachineTargetYaw = camTargetEndYaw;
+            ResolvePenetration();
+            characterController.enabled = true;
+            inputs.jump = false;
+            inputs.move = Vector2.zero;
+            stateTimer = 0f;
+            state = State.Recovery;
         }
     }
 
-    IEnumerator StartClimb(Vector3 target, float duration)
+    void ResolvePenetration()
     {
-        state = State.Exicuting;
+        var cc = characterController;
+        Collider[] near = Physics.OverlapCapsule(transform.position + Vector3.up * cc.radius, transform.position + Vector3.up * (cc.height - cc.radius), cc.radius, ObstrutionLayer);
+        
+        for (int pass = 0; pass < 3 && near.Length > 0; pass++)
+        {
+            bool pushed = false;
+            foreach(var col in near)
+            {
+                if(Physics.ComputePenetration(cc, transform.position, transform.rotation, col, col.transform.position, col.transform.rotation, out Vector3 dir, out float dist))
+                {
+                    transform.position += dir * (dist + 0.01f);
+                    pushed = true;
+                }
+            }
+            if (!pushed) break;
+            near = Physics.OverlapCapsule(transform.position + Vector3.up * cc.radius, transform.position + Vector3.up * (cc.height - cc.radius),cc.radius, ObstrutionLayer);
+        }
+    }
+
+    bool HasHeadroom(Vector3 ledgePoint, Vector3 wallNormalXZ)
+    {
+        const float landingLift = 0.05f;
+        Vector3 standPos = ledgePoint + (-wallNormalXZ) * ledgeInset + Vector3.up * landingLift;
+        Vector3 p1 = standPos + Vector3.up * headroomRadius;
+        Vector3 p2 = standPos + Vector3.up * (headroomHeight - headroomRadius);
+        return !Physics.CheckCapsule(p1, p2, headroomRadius, ObstrutionLayer);
+    }
+
+    bool HasVerticleClerance(Vector3 feet, float ledgeTopY)
+    {
+        float r = characterController.radius * 0.5f;
+        float rise = ledgeTopY - feet.y;
+        if (rise <= r * 2f) return true;
+        Vector3 p1 = feet + Vector3.up * r;
+        Vector3 p2 = new Vector3(feet.x, ledgeTopY - r, feet.z);
+
+        return !Physics.CheckCapsule(p1, p2, r, ObstrutionLayer);
+    }
+
+    void EnterExecute(DetectionResult hit)
+    {
+        activeKind = hit.kind;
+
+        AnimationClip clip = hit.kind switch
+        {
+            ParkourKind.Mantle => mantleClip,
+            ParkourKind.MediumClimb => mediumClimbClip,
+            ParkourKind.HighClimb => highClimbClip,
+            _ => null
+        };
+
+        activeDuration = clip != null ? clip.length : 1f;
+
+        startPos = transform.position;
+        startRot = transform.rotation;
+
+        landingPos = hit.ledgeTop + (-hit.wallNormalXZ) * ledgeInset + Vector3.up * 0.02f;
+
+        risePoint = new Vector3(startPos.x, hit.ledgeTop.y + 0.15f, startPos.z);
+
+        faceWallRot = quaternion.LookRotation(-hit.wallNormalXZ, Vector3.up);
+
+        camtargetStartRot = cinemachineTarget.rotation;
+        camTargetEndYaw = faceWallRot.eulerAngles.y;
+        camTargetEndRot = Quaternion.Euler(camtargetStartRot.eulerAngles.x, camTargetEndYaw, 0f);
+
         tpc.enabled = false;
         characterController.enabled = false;
 
-        Vector3 startpos = transform.position;
-        float time = 0f;
-
-        while(time < duration)
+        if(animator != null && clip != null)
         {
-            time += Time.deltaTime;
-            transform.position = Vector3.Lerp(startpos, target, time / duration);
-            yield return null;
+            animator.SetTrigger(clip.name);
         }
-
-        characterController.enabled = true;
-        tpc.enabled = true;
-        state = State.Recovery;
-        yield return new WaitForSeconds(recoverDuration);
-        state = State.Cooldown;
-        yield return new WaitForSeconds(cooldownDuration);
-        state = State.Idleing;
+        
+        stateTimer = 0f;
+        state = State.Exacuting;
     }
 
     void OnDrawGizmosSelected()
     {
-        Vector3 fwd =transform.forward;
+        Vector3 feet = transform.position;
+        Vector3 fwd = transform.forward;
         fwd.y = 0f;
 
         if (fwd.sqrMagnitude < Mathf.Epsilon) return;
 
         fwd.Normalize();
 
-        float[] probeHeights = { feetProbeHeight, chestProbeHeight, headProbeHeight, overheadProbeHight, noClimbHight };
-        
-        foreach(float height in probeHeights)
+        float[] probeHeights = { lowProbeHeight, waistProbeHeight, headProbeHeight, overheadProbeHight, impossibleHight };
+
+        foreach (float height in probeHeights)
         {
             Vector3 origin = transform.position + Vector3.up * height;
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(origin, origin + fwd * contactDistance);
+
+            bool hit = Physics.SphereCast(origin, probeSpherRadius, fwd, out _, triggerDistance, climbableLayer);
+
+            Gizmos.color = hit ? Color.red : Color.green;
+            Gizmos.DrawLine(origin, origin + fwd * triggerDistance);
+            Gizmos.DrawWireSphere(origin + fwd * contactDistance, probeSpherRadius);
         }
+
+
     }
 }

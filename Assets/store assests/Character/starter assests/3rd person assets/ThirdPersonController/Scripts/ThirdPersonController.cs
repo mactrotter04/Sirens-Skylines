@@ -60,7 +60,7 @@ namespace StarterAssets
 		public bool LockCameraPosition = false;
 
 		// cinemachine
-		private float _cinemachineTargetYaw;
+		public float _cinemachineTargetYaw;
 		private float _cinemachineTargetPitch;
 
 		// player
