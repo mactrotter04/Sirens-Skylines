@@ -68,7 +68,7 @@ namespace StarterAssets
 		private float _animationBlend;
 		private float _targetRotation = 0.0f;
 		private float _rotationVelocity;
-		private float _verticalVelocity;
+		public float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
 
 		// timeout deltatime

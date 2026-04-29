@@ -16,11 +16,11 @@ public class ParkourHandler : MonoBehaviour
 
     [Header("Probes")]
     [SerializeField] float lowProbeHeight = 0.3f;
-    [SerializeField] float waistProbeHeight = 1f;
-    [SerializeField] float headProbeHeight = 1.7f;
+    public float waistProbeHeight = 1f;
+    public float headProbeHeight = 1.7f;
     [SerializeField] float overheadProbeHight = 2.6f;
     [SerializeField] float impossibleHight = 3.2f;
-    [SerializeField] float probeSpherRadius = 0.15f;
+    public float probeSpherRadius = 0.15f;
 
     [Header("Climbing")]
     [SerializeField] LayerMask climbableLayer;
