@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 1152426092888007507}
   - component: {fileID: 3372414306837750494}
   - component: {fileID: 4965567958553853898}
+  - component: {fileID: 3246189407222908825}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -63,7 +64,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410894086415611564}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.70710677, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -36.3, y: 0.04, z: -5.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -152,6 +153,7 @@ MonoBehaviour:
   CameraAngleOverride: 0
   LockCameraPosition: 0
   _cinemachineTargetYaw: 0
+  _verticalVelocity: 0
 --- !u!114 &822477508457469245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +336,7 @@ MonoBehaviour:
   ledgeInset: 0.3
   recoverDuration: 0.5
   cooldownDuration: 2
-  minTriggerSpeed: 6
+  minTriggerSpeed: 0
   triggerDistance: 1.2
   ledgeMaxSlope: 35
   headroomHeight: 1.8
@@ -342,6 +344,41 @@ MonoBehaviour:
   mantleClip: {fileID: 7400000, guid: 34ba37a9509674b45a1c6d5f6f8df2d5, type: 2}
   mediumClimbClip: {fileID: 7400000, guid: f716fa40f6fba8542ab0189422098af5, type: 2}
   highClimbClip: {fileID: 7400000, guid: 8572ef7770d94b14fa6afca1f06deec6, type: 2}
+--- !u!114 &3246189407222908825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410894086415611564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5c3591dc9915d418917de559d6d5fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WallRun
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  wallCheckDistance: 0.5
+  maxAngleFromParallel: 20
+  wallVerticalityTolerance: 10
+  minSpeedForWallRun: 5
+  minHeightFromGround: 1
+  wallRunSpeed: 8
+  wallRunDuration: 5
+  wallRunGravity: 1
+  wallStickForce: 5
+  maxNormalChamgeAngle: 50
+  verifyDistanceMargin: 0.2
+  wallNormalSmoothing: 0.25
+  wallJumpUpForce: 2
+  wallJumpSideForce: 3
+  wallJumpForwardForce: 3
+  wallJumpAirTime: 0.5
+  wallJumpGravity: 0
+  wallJumpCooldown: 0.3
+  wallRunStaminaDrain: 10
+  wallJumpStaminaCost: 5
 --- !u!1001 &3473939034575329046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -398,7 +435,8 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9550852, guid: edc13eb972d2a704db06565103473e80, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
