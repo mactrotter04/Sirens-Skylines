@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 1152426092888007507}
   - component: {fileID: 3372414306837750494}
   - component: {fileID: 4965567958553853898}
-  - component: {fileID: 3246189407222908825}
+  - component: {fileID: 4384149419337555245}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -344,7 +344,7 @@ MonoBehaviour:
   mantleClip: {fileID: 7400000, guid: 34ba37a9509674b45a1c6d5f6f8df2d5, type: 2}
   mediumClimbClip: {fileID: 7400000, guid: f716fa40f6fba8542ab0189422098af5, type: 2}
   highClimbClip: {fileID: 7400000, guid: 8572ef7770d94b14fa6afca1f06deec6, type: 2}
---- !u!114 &3246189407222908825
+--- !u!114 &4384149419337555245
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -353,32 +353,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 1410894086415611564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c5c3591dc9915d418917de559d6d5fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 229ec9b9c84580040b080498c5e8dc9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallRun
   wallLayer:
     serializedVersion: 2
     m_Bits: 8
-  wallCheckDistance: 0.5
+  wallCheckDistance: 1.2
   maxAngleFromParallel: 20
   wallVerticalityTolerance: 10
-  minSpeedForWallRun: 5
   minHeightFromGround: 1
+  minSpeedForWallRun: 5
   wallRunSpeed: 8
-  wallRunDuration: 5
-  wallRunGravity: 1
+  wallRunDuration: 10
+  wallRunGravity: 0
   wallStickForce: 5
-  maxNormalChamgeAngle: 50
+  maxNormalChangeAngle: 50
   verifyDistanceMargin: 0.2
   wallNormalSmoothing: 0.25
-  wallJumpUpForce: 2
-  wallJumpSideForce: 3
-  wallJumpForwardForce: 3
-  wallJumpAirTime: 0.5
+  wallJumpUpForce: 0.5
+  wallJumpSideForce: 15
+  wallJumpForwardForce: 4
+  wallJumpAitTime: 0.5
   wallJumpGravity: 0
   wallJumpCooldown: 0.3
   wallRunStaminaDrain: 10
   wallJumpStaminaCost: 5
+  wallRunLeftClip: {fileID: 7400000, guid: f808cd213af53b540a01ac3b6e48bd99, type: 2}
+  wallRunRightClip: {fileID: 7400000, guid: 4f91856536990974698ef788d537fb0a, type: 2}
+  wallJumpClip: {fileID: 0}
 --- !u!1001 &3473939034575329046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -468,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.20000005
+      value: 0.20000052
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.y
