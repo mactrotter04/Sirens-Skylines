@@ -1002,6 +1002,7 @@ GameObject:
   - component: {fileID: 7887658922800240749}
   - component: {fileID: 4744236144236890702}
   - component: {fileID: 2627922527570459547}
+  - component: {fileID: 6962453075373549828}
   m_Layer: 3
   m_Name: SM_Veh_Truck_01
   m_TagString: Untagged
@@ -1111,8 +1112,29 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.7483554, y: 2.5206208, z: 6.646886}
-  m_Center: {x: 0, y: 1.5466294, z: 0.49226087}
+  m_Size: {x: 2.7483554, y: 2.5206208, z: 2.3454688}
+  m_Center: {x: -4.025169e-13, y: 1.5466294, z: 2.6429691}
+--- !u!65 &6962453075373549828
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6502625943042435453}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.7483554, y: 1.0044783, z: 4.7959695}
+  m_Center: {x: 2.3959578e-13, y: 0.7885583, z: -0.9161424}
 --- !u!1 &6938358371812722617
 GameObject:
   m_ObjectHideFlags: 0
