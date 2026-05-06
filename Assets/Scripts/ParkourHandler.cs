@@ -25,7 +25,7 @@ public class ParkourHandler : MonoBehaviour
     [Header("Climbing")]
     [SerializeField] LayerMask climbableLayer;
     [SerializeField] LayerMask ObstrutionLayer;
-    [SerializeField] float ledgeInset = 0.3f;
+    [SerializeField] float landingInset = 0.3f;
 
     [Header("Climbing Cooldowns")]
     [SerializeField] float recoverDuration = 0.25f;
@@ -36,35 +36,55 @@ public class ParkourHandler : MonoBehaviour
     [SerializeField] float triggerDistance = 1.2f;
     [SerializeField] float ledgeMaxSlope = 35f;
 
+    [Header("Climb Sizes")]
     [SerializeField] float headroomHeight = 1.8f;
     [SerializeField] float headroomRadius = 0.35f;
 
+    [Header("Animations")]
     [SerializeField] AnimationClip mantleClip;
     [SerializeField] AnimationClip mediumClimbClip;
     [SerializeField] AnimationClip highClimbClip;
+
+    [Header("Ledge Search")]
+    [SerializeField] float ledgeStepSize = 0.04f;
+    [SerializeField] float ledgeMaxSerch = 0.6f;
+    [SerializeField] float ledgeRayHeightAbove = 0.5f;
+    [SerializeField] float ledgeRayDistance = 4f;
+
+    [Header("Climb Motion")]
+    [SerializeField] float mantleArkHeight = 0.15f;
+    [SerializeField] [Range (0f, 1f)] float climbPhaseSplit = 0.5f;
+    [SerializeField] float risePointLift = 0.15f;
+    [SerializeField] float landingFinalLift = 0.02f;
+    [SerializeField] float standPosLift = 0.05f;
+    [SerializeField] float fallbackAnimDuration = 1f;
+
+    [Header("Penitration Resolve")]
+    [SerializeField] int penetrationResolvePasses = 3;
+    [SerializeField] float penetrationSepartaionBuffer = 0.01f;
+    [SerializeField] float verticalCleranceRadiusMult = 0.5f;
 
     StarterAssetsInputs inputs;
     Animator animator;
     ThirdPersonController tpc;
     BoxCollider boxCollider;
     CharacterController characterController;
+    Transform cinemachineTarget;
+
     State state = State.Idleing;
     ParkourKind activeKind = ParkourKind.None;
+
     DetectionResult queuedHit;
     Vector3 startPos, landingPos, risePoint;
     Quaternion startRot, faceWallRot;
-    Transform cinemachineTarget;
     Quaternion camtargetStartRot, camTargetEndRot;
 
-
-    float stateTimer;
     bool lastJumpHeld;
     bool jumpPressed;
+
     float activeDuration;
     float camTargetEndYaw;
-
-
-
+    float stateTimer;
 
     struct DetectionResult
     {
@@ -193,14 +213,29 @@ public class ParkourHandler : MonoBehaviour
 
         wallNoraml.Normalize();
 
-        Vector3 ledgeProbeOrigin = waistHit.point + fwd * ledgeInset + Vector3.up * (impossibleHight + 0.5f);
+        RaycastHit ledgeHit = default;
+        bool ledgeOk = false;
 
-        if (!Physics.Raycast(ledgeProbeOrigin, Vector3.down, out RaycastHit ledgeHit, 4f, climbableLayer))
+        for (float inset = ledgeStepSize; inset <= ledgeMaxSerch; inset += ledgeStepSize)
         {
-            return false;
+            Vector3 origin = waistHit.point + fwd * inset + Vector3.up * (impossibleHight + ledgeRayHeightAbove);
+
+            if (!Physics.Raycast(origin, Vector3.down, out RaycastHit candiate, ledgeRayDistance, climbableLayer))
+            {
+                continue;
+            }
+
+            if(Vector3.Angle(candiate.normal, Vector3.up) > ledgeMaxSlope)
+            {
+                continue;
+            }
+
+            ledgeHit = candiate;
+            ledgeOk = true;
+            break;
         }
 
-        if (Vector3.Angle(ledgeHit.normal, Vector3.up) > ledgeMaxSlope)
+        if (!ledgeOk)
         {
             return false;
         }
@@ -264,19 +299,17 @@ public class ParkourHandler : MonoBehaviour
         {
             float easedProgress = Mathf.SmoothStep(0f, 1f, progress);
             pos = Vector3.Lerp(startPos, landingPos, easedProgress);
-            pos.y += MathF.Sin(progress * MathF.PI) * 0.15f;
+            pos.y += MathF.Sin(progress * MathF.PI) * mantleArkHeight;
         }
         else
         {
-            const float phase1 = 0.5f;
-
-            if (progress < phase1)
+            if (progress < climbPhaseSplit)
             {
-                pos = Vector3.Lerp(startPos, risePoint, progress / phase1);
+                pos = Vector3.Lerp(startPos, risePoint, progress / climbPhaseSplit);
             }
             else
             {
-                pos = Vector3.Lerp(risePoint, landingPos, (progress - phase1) / (1f - phase1));
+                pos = Vector3.Lerp(risePoint, landingPos, (progress - climbPhaseSplit) / (1f - climbPhaseSplit));
             }
         }
 
@@ -304,27 +337,26 @@ public class ParkourHandler : MonoBehaviour
     {
         var cc = characterController;
         Collider[] near = Physics.OverlapCapsule(transform.position + Vector3.up * cc.radius, transform.position + Vector3.up * (cc.height - cc.radius), cc.radius, ObstrutionLayer);
-        
-        for (int pass = 0; pass < 3 && near.Length > 0; pass++)
+
+        for (int pass = 0; pass < penetrationResolvePasses && near.Length > 0; pass++)
         {
             bool pushed = false;
-            foreach(var col in near)
+            foreach (var col in near)
             {
-                if(Physics.ComputePenetration(cc, transform.position, transform.rotation, col, col.transform.position, col.transform.rotation, out Vector3 dir, out float dist))
+                if (Physics.ComputePenetration(cc, transform.position, transform.rotation, col, col.transform.position, col.transform.rotation, out Vector3 dir, out float dist))
                 {
-                    transform.position += dir * (dist + 0.01f);
+                    transform.position += dir * (dist + penetrationSepartaionBuffer);
                     pushed = true;
                 }
             }
             if (!pushed) break;
-            near = Physics.OverlapCapsule(transform.position + Vector3.up * cc.radius, transform.position + Vector3.up * (cc.height - cc.radius),cc.radius, ObstrutionLayer);
+            near = Physics.OverlapCapsule(transform.position + Vector3.up * cc.radius, transform.position + Vector3.up * (cc.height - cc.radius), cc.radius, ObstrutionLayer);
         }
     }
 
     bool HasHeadroom(Vector3 ledgePoint, Vector3 wallNormalXZ)
     {
-        const float landingLift = 0.05f;
-        Vector3 standPos = ledgePoint + (-wallNormalXZ) * ledgeInset + Vector3.up * landingLift;
+        Vector3 standPos = ledgePoint + (-wallNormalXZ) * landingInset + Vector3.up * standPosLift;
         Vector3 p1 = standPos + Vector3.up * headroomRadius;
         Vector3 p2 = standPos + Vector3.up * (headroomHeight - headroomRadius);
         return !Physics.CheckCapsule(p1, p2, headroomRadius, ObstrutionLayer);
@@ -332,7 +364,7 @@ public class ParkourHandler : MonoBehaviour
 
     bool HasVerticleClerance(Vector3 feet, float ledgeTopY)
     {
-        float r = characterController.radius * 0.5f;
+        float r = characterController.radius * verticalCleranceRadiusMult;
         float rise = ledgeTopY - feet.y;
         if (rise <= r * 2f) return true;
         Vector3 p1 = feet + Vector3.up * r;
@@ -353,14 +385,21 @@ public class ParkourHandler : MonoBehaviour
             _ => null
         };
 
-        activeDuration = clip != null ? clip.length : 1f;
+        if(clip != null)
+        {
+            activeDuration = clip.length;
+        }
+        else
+        {
+            activeDuration = fallbackAnimDuration;
+        }
 
         startPos = transform.position;
         startRot = transform.rotation;
 
-        landingPos = hit.ledgeTop + (-hit.wallNormalXZ) * ledgeInset + Vector3.up * 0.02f;
+        landingPos = hit.ledgeTop + (-hit.wallNormalXZ) * landingInset + Vector3.up * landingFinalLift;
 
-        risePoint = new Vector3(startPos.x, hit.ledgeTop.y + 0.15f, startPos.z);
+        risePoint = new Vector3(startPos.x, hit.ledgeTop.y + risePointLift, startPos.z);
 
         faceWallRot = quaternion.LookRotation(-hit.wallNormalXZ, Vector3.up);
 
@@ -371,11 +410,11 @@ public class ParkourHandler : MonoBehaviour
         tpc.enabled = false;
         characterController.enabled = false;
 
-        if(animator != null && clip != null)
+        if (animator != null && clip != null)
         {
             animator.SetTrigger(clip.name);
         }
-        
+
         stateTimer = 0f;
         state = State.Exacuting;
     }
