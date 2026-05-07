@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor.ShaderGraph.Internal;
 
 public class Energy : MonoBehaviour
 {
@@ -35,6 +34,8 @@ public class Energy : MonoBehaviour
         tpc = FindFirstObjectByType<ThirdPersonController>();
         currentEnergy = energyMax;
         tempSpeed = tpc.SprintSpeed;
+
+        if (energySlider == null) return;
 
         energySlider.value = 1f;
         energySlider.minValue = 0f;
@@ -82,6 +83,8 @@ public class Energy : MonoBehaviour
 
     void UpdateEnergy()
     {
+        if (energySlider == null) return;
+
         energySlider.value = currentEnergy / energyMax;
 
         float alpha = 1f;

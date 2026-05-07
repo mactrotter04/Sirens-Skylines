@@ -4,7 +4,6 @@ using System.Collections;
 using System.Net.NetworkInformation;
 using Unity.Collections;
 using Unity.Mathematics;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Rendering.Universal.Internal;
 

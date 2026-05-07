@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 314574613738413264}
   - component: {fileID: 8722792957504047773}
   - component: {fileID: 3009582517738847214}
+  - component: {fileID: 208329170932255275}
   m_Layer: 3
   m_Name: SM_Veh_SchoolBus_01
   m_TagString: Untagged
@@ -211,8 +212,29 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.5379424, y: 2.993744, z: 8.089358}
-  m_Center: {x: 0.043744083, y: 1.7257574, z: 0.044294592}
+  m_Size: {x: 3.5379424, y: 2.993744, z: 6.3741884}
+  m_Center: {x: 0.043744087, y: 1.7257574, z: -0.81329054}
+--- !u!65 &208329170932255275
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901498537324294872}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5379424, y: 1.743954, z: 1.6622059}
+  m_Center: {x: 0.04373646, y: 1.1008624, z: 3.2578871}
 --- !u!1 &1210756833840882683
 GameObject:
   m_ObjectHideFlags: 0
