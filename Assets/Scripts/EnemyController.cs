@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.Burst.Intrinsics;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,7 +23,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float chaseSpeed = 6.5f;
 
     [Header("Damage")]
-    [SerializeField] Vector2 damageRange = new Vector2 (40000f, 120000f);
+    [SerializeField] Vector2 damageRange = new Vector2(40000f, 120000f);
 
     [Header("Shooting")]
     [SerializeField] Transform firePoint;
@@ -34,12 +36,20 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float bulletHitRadius = 0.1f;
     [SerializeField] float bulletTrailLength = 1.5f;
 
+    [Header("Arms")]
+    [SerializeField] Transform[] aimArmBones;
+    [SerializeField] Vector3 pitchAxisLocal = new Vector3(1, 0, 0);
+    [SerializeField] float maxPitchUp = 60f;
+    [SerializeField] float maxPitchDown = 60f;
+    [SerializeField] float pitchSmoothing = 10f;
+
+    float currentPitch;
     float distanceToTarget = Mathf.Infinity;
     float idleTimer = 0f;
     float nextShotTime;
     bool windupInFlight;
     bool isProvoked = false;
-    
+
     Animator animator;
     NavMeshAgent navMeshAgent;
     EnemyHealth enemyHelath;
@@ -82,6 +92,33 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (!isProvoked) return;
+        if (aimPoint == null || firePoint == null) return;
+        if (aimArmBones == null || aimArmBones.Length == 0) return;
+        if (enemyHelath != null && enemyHelath.IsDead()) return;
+
+        Vector3 toAim = aimPoint.position - firePoint.position;
+        Vector3 flat = new Vector3(toAim.x, 0f, toAim.z);
+        float horizontalDistance = flat.magnitude;
+
+        float desiredPitch = -Mathf.Atan2(toAim.y, horizontalDistance) * Mathf.Rad2Deg;
+
+        desiredPitch = Mathf.Clamp(desiredPitch, -maxPitchDown, maxPitchUp);
+
+        currentPitch = Mathf.Lerp(currentPitch, desiredPitch, pitchSmoothing * Time.deltaTime);
+
+        Quaternion pitchDelta = Quaternion.AngleAxis(currentPitch, pitchAxisLocal);
+
+        for (int i = 0; 1 < aimArmBones.Length; i++)
+        {
+            Transform bone = aimArmBones[i];
+            if(bone == null) continue;
+            bone.localRotation *= pitchDelta;
+        }
+    }
+
     void Engagetarget()
     {
         FaceTarget();
@@ -107,10 +144,10 @@ public class EnemyController : MonoBehaviour
     void AttackTarget()
     {
         animator.SetBool("Chase", false);
-        
-        if(enemyHelath.IsDead()) return;
-        if(windupInFlight) return;
-        if(Time.time < nextShotTime) return;
+
+        if (enemyHelath.IsDead()) return;
+        if (windupInFlight) return;
+        if (Time.time < nextShotTime) return;
 
         nextShotTime = Time.time + timeBetweenShots;
         StartCoroutine(Shooting());
@@ -176,7 +213,11 @@ public class EnemyController : MonoBehaviour
         animator.SetTrigger("Shoot");
         yield return new WaitForSeconds(windupTime);
 
-        if(!enemyHelath.IsDead() && target != null && firePoint != null && lineRenderer != null)
+        ////Vector3 dir = aimPoint.position - arms[0].position;
+        ////float angle = Mathf.Atan2(-dir.normalized.y) * Mathf.Rad2Deg;
+        ////arms[0].localRotation = Quaternion.AngleAxis(angle, Vector3.right);
+
+        if (!enemyHelath.IsDead() && target != null && firePoint != null && lineRenderer != null)
         {
             Vector3 origin = firePoint.position;
             Vector3 aimAt = aimPoint.position;
@@ -200,7 +241,7 @@ public class EnemyController : MonoBehaviour
                 float stepLength = currentDistance - lastDistance;
 
                 Vector3 castorigin = origin + direction * lastDistance;
-                if(Physics.SphereCast(castorigin, bulletHitRadius, direction, out RaycastHit hit, stepLength))
+                if (Physics.SphereCast(castorigin, bulletHitRadius, direction, out RaycastHit hit, stepLength))
                 {
                     float tipDistance = lastDistance + hit.distance;
                     float tailDistance = Mathf.Max(0f, tipDistance - bulletTrailLength);
@@ -208,7 +249,7 @@ public class EnemyController : MonoBehaviour
                     lineRenderer.SetPosition(1, hit.point);
 
                     PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
-                    if(playerHealth != null)
+                    if (playerHealth != null)
                     {
                         float damage = Random.Range(damageRange.x, damageRange.y);
                         playerHealth.TakeDamage(damage);
@@ -229,6 +270,8 @@ public class EnemyController : MonoBehaviour
 
         windupInFlight = false;
     }
+
+
 
 
     void OnDrawGizmos()
