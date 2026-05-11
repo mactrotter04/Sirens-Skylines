@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,14 +16,30 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float maxIdleTime = 5f;
     [SerializeField] float sampleingDistance = 1f;
 
-
+    [Header("Speed")]
     [SerializeField] float walkSpeed = 2.5f;
     [SerializeField] float chaseSpeed = 6.5f;
 
-    float distanceToTarget = Mathf.Infinity;
-    bool isProvoked = false;
-    float idleTimer = 0f;
+    [Header("Damage")]
+    [SerializeField] Vector2 damageRange = new Vector2 (40000f, 120000f);
 
+    [Header("Shooting")]
+    [SerializeField] Transform firePoint;
+    [SerializeField] Transform aimPoint;
+    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] float timeBetweenShots = 2f;
+    [SerializeField] float windupTime = 0.5f;
+    [SerializeField] float bulletSpeed = 15f;
+    [SerializeField] float bulletMaxDistance = 50f;
+    [SerializeField] float bulletHitRadius = 0.1f;
+    [SerializeField] float bulletTrailLength = 1.5f;
+
+    float distanceToTarget = Mathf.Infinity;
+    float idleTimer = 0f;
+    float nextShotTime;
+    bool windupInFlight;
+    bool isProvoked = false;
+    
     Animator animator;
     NavMeshAgent navMeshAgent;
     EnemyHealth enemyHelath;
@@ -90,7 +107,13 @@ public class EnemyController : MonoBehaviour
     void AttackTarget()
     {
         animator.SetBool("Chase", false);
-        animator.SetTrigger("Shoot");
+        
+        if(enemyHelath.IsDead()) return;
+        if(windupInFlight) return;
+        if(Time.time < nextShotTime) return;
+
+        nextShotTime = Time.time + timeBetweenShots;
+        StartCoroutine(Shooting());
     }
 
     void FaceTarget()
@@ -147,6 +170,67 @@ public class EnemyController : MonoBehaviour
     }
 
 
+    IEnumerator Shooting()
+    {
+        windupInFlight = true;
+        animator.SetTrigger("Shoot");
+        yield return new WaitForSeconds(windupTime);
+
+        if(!enemyHelath.IsDead() && target != null && firePoint != null && lineRenderer != null)
+        {
+            Vector3 origin = firePoint.position;
+            Vector3 aimAt = aimPoint.position;
+            Vector3 toTarget = aimAt - origin;
+            Vector3 direction = toTarget.normalized;
+
+            float targetDistance = Mathf.Min(toTarget.magnitude, bulletMaxDistance);
+
+            lineRenderer.positionCount = 2;
+            lineRenderer.useWorldSpace = true;
+            lineRenderer.SetPosition(0, origin);
+            lineRenderer.SetPosition(1, origin);
+            lineRenderer.enabled = true;
+
+            float currentDistance = 0f;
+
+            while (currentDistance < targetDistance)
+            {
+                float lastDistance = currentDistance;
+                currentDistance = Mathf.Min(currentDistance + bulletSpeed * Time.deltaTime, targetDistance);
+                float stepLength = currentDistance - lastDistance;
+
+                Vector3 castorigin = origin + direction * lastDistance;
+                if(Physics.SphereCast(castorigin, bulletHitRadius, direction, out RaycastHit hit, stepLength))
+                {
+                    float tipDistance = lastDistance + hit.distance;
+                    float tailDistance = Mathf.Max(0f, tipDistance - bulletTrailLength);
+                    lineRenderer.SetPosition(0, origin + direction * tailDistance);
+                    lineRenderer.SetPosition(1, hit.point);
+
+                    PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
+                    if(playerHealth != null)
+                    {
+                        float damage = Random.Range(damageRange.x, damageRange.y);
+                        playerHealth.TakeDamage(damage);
+                    }
+                    break;
+                }
+
+                float currentTailDistance = Mathf.Max(0f, currentDistance - bulletTrailLength);
+                lineRenderer.SetPosition(0, origin + direction * currentTailDistance);
+                lineRenderer.SetPosition(1, origin + direction * currentDistance);
+
+                yield return null;
+            }
+
+            yield return null;
+            lineRenderer.enabled = false;
+        }
+
+        windupInFlight = false;
+    }
+
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -161,7 +245,7 @@ public class EnemyController : MonoBehaviour
         Gizmos.color = Color.blue;
         if (!Application.isPlaying && navMeshAgent != null)
         {
-            Gizmos.DrawSphere(navMeshAgent.destination, 1f); // destination pis 
+            Gizmos.DrawSphere(navMeshAgent.destination, 1f); // destination pos 
         }
     }
 
