@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
     PlayerHealth target; //player
     [SerializeField] float chaseramge = 10f;
     [SerializeField] float turnSpeed = 1f;
-    
+
 
     [Header("idle Zone")]
     [SerializeField] float wanderRadius = 100f;
@@ -18,7 +18,7 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] float walkSpeed = 2.5f;
     [SerializeField] float chaseSpeed = 6.5f;
- 
+
     float distanceToTarget = Mathf.Infinity;
     bool isProvoked = false;
     float idleTimer = 0f;
@@ -28,7 +28,7 @@ public class EnemyController : MonoBehaviour
     EnemyHealth enemyHelath;
 
     Vector3 wanderOrigin;
-    
+
 
     void Start()
     {
@@ -104,15 +104,15 @@ public class EnemyController : MonoBehaviour
 
     void Wander()
     {
-        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <=  navMeshAgent.stoppingDistance)
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
             GetComponent<Animator>().SetBool("chase", false);
 
             idleTimer -= Time.deltaTime;
 
-            if(idleTimer <= 0f)
+            if (idleTimer <= 0f)
             {
-                if(GetNewWanderDestination(out Vector3 destination))
+                if (GetNewWanderDestination(out Vector3 destination))
                 {
                     GetComponent<Animator>().SetTrigger("Move");
                     navMeshAgent.speed = walkSpeed;
@@ -126,11 +126,11 @@ public class EnemyController : MonoBehaviour
 
     bool GetNewWanderDestination(out Vector3 result)
     {
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             Vector3 randomPoint = wanderOrigin + Random.insideUnitSphere * wanderRadius;
 
-            if(NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, sampleingDistance, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, sampleingDistance, NavMesh.AllAreas))
             {
                 result = hit.position;
                 return true;
@@ -159,7 +159,10 @@ public class EnemyController : MonoBehaviour
         Gizmos.DrawSphere(wanderOrigin, 1f); // current pos
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(navMeshAgent.destination, 1f); // destination pis 
+        if (!Application.isPlaying && navMeshAgent != null)
+        {
+            Gizmos.DrawSphere(navMeshAgent.destination, 1f); // destination pis 
+        }
     }
 
     //NavMesh.SamplePosition(transform.position, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas);
