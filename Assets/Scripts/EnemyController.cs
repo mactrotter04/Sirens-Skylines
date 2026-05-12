@@ -90,6 +90,9 @@ public class EnemyController : MonoBehaviour
         {
             Wander();
         }
+
+        animator.SetFloat("Speed", navMeshAgent.velocity.magnitude);
+        animator.SetFloat("MotionSpeed", 1f);
     }
 
     void LateUpdate()
@@ -137,13 +140,13 @@ public class EnemyController : MonoBehaviour
     void Chasetarget()
     {
         navMeshAgent.speed = chaseSpeed;
-        animator.SetBool("Chase", true);
+        animator.SetBool("Shoot", false);
         navMeshAgent.SetDestination(target.transform.position);
     }
 
     void AttackTarget()
     {
-        animator.SetBool("Chase", false);
+        //animator.SetBool("Chase", false);
 
         if (enemyHelath.IsDead()) return;
         if (windupInFlight) return;
@@ -166,7 +169,7 @@ public class EnemyController : MonoBehaviour
     {
         if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
-            GetComponent<Animator>().SetBool("chase", false);
+            //GetComponent<Animator>().SetBool("chase", false);
 
             idleTimer -= Time.deltaTime;
 
@@ -174,7 +177,7 @@ public class EnemyController : MonoBehaviour
             {
                 if (GetNewWanderDestination(out Vector3 destination))
                 {
-                    GetComponent<Animator>().SetTrigger("Move");
+                    //GetComponent<Animator>().SetTrigger("Move");
                     navMeshAgent.speed = walkSpeed;
                     navMeshAgent.SetDestination(destination);
                 }
@@ -210,7 +213,7 @@ public class EnemyController : MonoBehaviour
     IEnumerator Shooting()
     {
         windupInFlight = true;
-        animator.SetTrigger("Shoot");
+        animator.SetBool("Shoot", true);
         yield return new WaitForSeconds(windupTime);
 
         ////Vector3 dir = aimPoint.position - arms[0].position;
@@ -224,7 +227,7 @@ public class EnemyController : MonoBehaviour
             Vector3 toTarget = aimAt - origin;
             Vector3 direction = toTarget.normalized;
 
-            float targetDistance = Mathf.Min(toTarget.magnitude, bulletMaxDistance);
+            float targetDistance =  bulletMaxDistance;
 
             lineRenderer.positionCount = 2;
             lineRenderer.useWorldSpace = true;
