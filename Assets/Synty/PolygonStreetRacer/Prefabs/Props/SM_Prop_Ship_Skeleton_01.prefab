@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 33626412050788232}
   - component: {fileID: 23854200572338408}
   - component: {fileID: 1036509439113241899}
+  - component: {fileID: 9015458499499281648}
+  - component: {fileID: 4714899030039015741}
+  - component: {fileID: 5048060400739309359}
   m_Layer: 0
   m_Name: SM_Prop_Ship_Skeleton_01
   m_TagString: Untagged
@@ -110,5 +113,67 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 22.33332, y: 34.66556, z: 108.564224}
-  m_Center: {x: -0.5996213, y: 17.33278, z: -1.2131214}
+  m_Size: {x: 20.769276, y: 34.66556, z: 38.748695}
+  m_Center: {x: 0.18240118, y: 17.33278, z: -36.120884}
+--- !u!65 &9015458499499281648
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252783318796102}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 20.837128, y: 34.66556, z: 53.233303}
+  m_Center: {x: -0.35666275, y: 17.33278, z: 26.452341}
+--- !u!65 &4714899030039015741
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252783318796102}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 19.108349, y: 8.778926, z: 16.483833}
+  m_Center: {x: -0.16341066, y: 4.389463, z: -8.442017}
+--- !u!114 &5048060400739309359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252783318796102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

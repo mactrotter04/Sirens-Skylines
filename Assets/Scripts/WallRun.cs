@@ -1,5 +1,6 @@
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WallRun : MonoBehaviour
 {
@@ -39,17 +40,15 @@ public class WallRun : MonoBehaviour
     [SerializeField] AnimationClip wallRunRightClip;
     [SerializeField] AnimationClip wallJumpClip;
 
-
-    float lastWallJumpTime;
-    float wallJumpTimer;
-    float wallRunTimer;
-
     Vector3 wallJumpVelocity;
     Vector3 wallNormal;
     Vector3 wallForward;
     Collider lastWallCollider;
 
-    bool lastJumpHeld;
+    float lastWallJumpTime;
+    float wallJumpTimer;
+    float wallRunTimer;
+
     bool isWallJumping;
     bool isWallRunning;
     bool isWallLeft;
@@ -81,8 +80,7 @@ public class WallRun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool jumpPressed = starterAssetsInputs.jump && !lastJumpHeld;
-        lastJumpHeld = starterAssetsInputs.jump;
+        bool jumpPressed = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
 
         if (thirdPersonController.Grounded && !isWallRunning && !isWallJumping)
         {
@@ -162,8 +160,7 @@ public class WallRun : MonoBehaviour
     {
         if (thirdPersonController.Grounded) return;
         if (!starterAssetsInputs.sprint) return;
-        if (Time.time - lastWallJumpTime < wallJumpCooldown) return;
-        if (energy.CurrentEnerg() <= 0) return;
+        if (!energy.CanSprint()) return;
 
         Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0f, characterController.velocity.z);
         if (horizontalVelocity.magnitude < minSpeedForWallRun) return;
@@ -208,7 +205,6 @@ public class WallRun : MonoBehaviour
         }
 
         thirdPersonController.enabled = false;
-        starterAssetsInputs.jump = false;
 
         animator.SetBool("WallRunning", true);
         animator.SetBool("FreeFall", false);
@@ -237,7 +233,7 @@ public class WallRun : MonoBehaviour
         animator.SetBool("FreeFall", false);
 
         energy.CalculateEnergy(-wallRunStaminaDrain * Time.deltaTime);
-        if (energy.CurrentEnerg() <= 0f)
+        if (!energy.CanSprint())
         {
             StopWallRun();
             return;
@@ -286,7 +282,7 @@ public class WallRun : MonoBehaviour
             return;
         }
 
-        if (jumpPressed)
+        if (jumpPressed && wallRunTimer >= wallJumpCooldown)
         {
             WallJump();
             return;
@@ -325,7 +321,6 @@ public class WallRun : MonoBehaviour
         isWallRight = false;
         isWallJumping = true;
         wallJumpTimer = 0f;
-        starterAssetsInputs.jump = false;
         animator.SetBool("WallRunning", false);
 
         if (wallJumpClip != null)

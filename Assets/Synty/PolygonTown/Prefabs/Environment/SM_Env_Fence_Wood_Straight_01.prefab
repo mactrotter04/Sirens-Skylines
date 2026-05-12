@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33828845947107432}
   - component: {fileID: 23515375940851772}
   - component: {fileID: 5502738107431643940}
+  - component: {fileID: 1149473509813896847}
   m_Layer: 0
   m_Name: SM_Env_Fence_Wood_Straight_01
   m_TagString: Untagged
@@ -112,3 +113,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.5091248, y: 2.1108036, z: 0.13969482}
   m_Center: {x: -1.2434375, y: 1.0461464, z: 0}
+--- !u!114 &1149473509813896847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719411279065754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: -1.2618462, y: 0, z: -1.1988177}
+  m_EndPoint: {x: -1.261846, y: 0, z: 1.0219609}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 2.54
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0

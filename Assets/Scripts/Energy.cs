@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class Energy : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class Energy : MonoBehaviour
     float tempSpeed;
     bool canSprint = true;
     public float EnergyMax() => energyMax;
+    public bool CanSprint() => canSprint;
 
     StarterAssetsInputs inputs;
     ThirdPersonController tpc;
@@ -56,7 +58,7 @@ public class Energy : MonoBehaviour
         float drainPerSecond = energyMax / energyLoss;
         float regainPerSecond = energyMax / energyRegain;
 
-        bool sprintHeld = Input.GetKey(KeyCode.LeftShift);
+        bool sprintHeld = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
 
         if (sprintHeld && currentEnergy > 0 && canSprint)
         {

@@ -1097,6 +1097,8 @@ GameObject:
   - component: {fileID: 33700723620906168}
   - component: {fileID: 23322386206271410}
   - component: {fileID: 6799914168271639569}
+  - component: {fileID: 4619319154322792999}
+  - component: {fileID: 707246860679591054}
   m_Layer: 0
   m_Name: SM_Veh_Exotic_Preset_01
   m_TagString: Untagged
@@ -1113,7 +1115,7 @@ Transform:
   m_GameObject: {fileID: 1328677854907788}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.0034040664, y: 0.00001680851, z: -0.0017122072}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1216,6 +1218,56 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.3416274, y: 1.2815707, z: 5.1055994}
   m_Center: {x: 0, y: 0.78124404, z: -0.0314703}
+--- !u!114 &4619319154322792999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328677854907788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: 1.6772637, y: 0, z: 0}
+  m_EndPoint: {x: 1.0702977, y: 1.4185395, z: 0}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 5.38
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0
+--- !u!114 &707246860679591054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328677854907788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: -1.9607393, y: 0, z: 0}
+  m_EndPoint: {x: -1.1095573, y: 1.4730343, z: 4.4323809e-10}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 5.16
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0
 --- !u!1 &1332145730016964
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33192471476480696}
   - component: {fileID: 23329896298990374}
   - component: {fileID: 6336433083336767900}
+  - component: {fileID: 8628481797289572291}
   m_Layer: 0
   m_Name: SM_Env_Fence_White_Straight_01
   m_TagString: Untagged
@@ -112,3 +113,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.499999, y: 1.1096003, z: 0.104887694}
   m_Center: {x: -1.2499981, y: 0.55480015, z: 0.0000073239207}
+--- !u!114 &8628481797289572291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326242154806616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: -1.25, y: 0, z: -0.8910655}
+  m_EndPoint: {x: -1.25, y: 0, z: 0.87660944}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 2.47
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0

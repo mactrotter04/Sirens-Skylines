@@ -2853,6 +2853,8 @@ GameObject:
   - component: {fileID: 33095119928017348}
   - component: {fileID: 23553103624445554}
   - component: {fileID: 7346734160059994631}
+  - component: {fileID: 3410529352420977862}
+  - component: {fileID: 217742171117561097}
   m_Layer: 0
   m_Name: SM_Veh_Exotic_Preset_02
   m_TagString: Untagged
@@ -2989,6 +2991,56 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.3416274, y: 1.2815707, z: 5.1055994}
   m_Center: {x: 0, y: 0.78124404, z: -0.0314703}
+--- !u!114 &3410529352420977862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641135638416214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: 1.5968335, y: 0, z: 0}
+  m_EndPoint: {x: 1.0938671, y: 1.4361856, z: 0}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 5.18
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0
+--- !u!114 &217742171117561097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641135638416214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eeb5dc026fdf4b488bc7ae0138ab719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshLink
+  m_SerializedVersion: 1
+  m_AgentTypeID: 0
+  m_StartPoint: {x: -1.4739037, y: 0, z: 0}
+  m_EndPoint: {x: -1.1357464, y: 1.4584302, z: 0}
+  m_StartTransform: {fileID: 0}
+  m_EndTransform: {fileID: 0}
+  m_Activated: 1
+  m_Width: 5.02
+  m_CostModifier: 1
+  m_IsOverridingCost: 0
+  m_Bidirectional: 1
+  m_AutoUpdatePosition: 0
+  m_Area: 0
 --- !u!1 &1653998120674130
 GameObject:
   m_ObjectHideFlags: 0

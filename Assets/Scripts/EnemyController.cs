@@ -124,21 +124,21 @@ public class EnemyController : MonoBehaviour
 
     void Engagetarget()
     {
-        FaceTarget();
 
         if (distanceToTarget >= navMeshAgent.stoppingDistance)
         {
             Chasetarget();
         }
-
-        if (distanceToTarget <= navMeshAgent.stoppingDistance)
+        else
         {
+            FaceTarget();
             AttackTarget();
         }
     }
 
     void Chasetarget()
     {
+        navMeshAgent.isStopped = false;
         navMeshAgent.speed = chaseSpeed;
         animator.SetBool("Shoot", false);
         navMeshAgent.SetDestination(target.transform.position);
@@ -147,6 +147,9 @@ public class EnemyController : MonoBehaviour
     void AttackTarget()
     {
         //animator.SetBool("Chase", false);
+
+        navMeshAgent.isStopped = true;
+        navMeshAgent.velocity = Vector3.zero;
 
         if (enemyHelath.IsDead()) return;
         if (windupInFlight) return;
