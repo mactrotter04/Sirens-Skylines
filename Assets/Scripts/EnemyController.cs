@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
 {
     PlayerHealth target; //player
     [SerializeField] float chaseramge = 10f;
-    [SerializeField] float turnSpeed = 1f;
+    [SerializeField] float turnSpeed = 520f;
 
 
     [Header("idle Zone")]
@@ -114,7 +114,7 @@ public class EnemyController : MonoBehaviour
 
         Quaternion pitchDelta = Quaternion.AngleAxis(currentPitch, pitchAxisLocal);
 
-        for (int i = 0; 1 < aimArmBones.Length; i++)
+        for (int i = 0; i < aimArmBones.Length; i++)
         {
             Transform bone = aimArmBones[i];
             if(bone == null) continue;
@@ -161,11 +161,15 @@ public class EnemyController : MonoBehaviour
 
     void FaceTarget()
     {
-        Vector3 direction = (target.transform.position - transform.position).normalized;
+        Vector3 flat = target.transform.position - transform.position;
 
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        flat.y = 0f;
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, turnSpeed * Time.deltaTime);
+        if (flat.sqrMagnitude < 0.0001f) return;
+
+        Quaternion lookRotation = Quaternion.LookRotation(flat);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, turnSpeed * Time.deltaTime);
     }
 
     void Wander()

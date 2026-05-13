@@ -1742,7 +1742,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 20
+  m_StoppingDistance: 15
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1777,7 +1777,7 @@ MonoBehaviour:
   timeBetweenShots: 1
   windupTime: 0.5
   bulletSpeed: 15
-  bulletMaxDistance: 50
+  bulletMaxDistance: 150
   bulletHitRadius: 0.1
   bulletTrailLength: 1.5
   aimArmBones:
@@ -1847,6 +1847,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  windupTime: 0.8
+  jumpHeight: 2
+  jumpDuration: 0.5
+  windupTurnDegreesPerSecond: 720
+  animator: {fileID: 4202465065592194921}
 --- !u!1 &8368682597721181859
 GameObject:
   m_ObjectHideFlags: 0

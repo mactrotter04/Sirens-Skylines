@@ -1,42 +1,39 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
-public class SceneHandler : MonoBehaviour
+public class SceneLoader : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void ReloadLevel()
     {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void LoadNextScene()
-    {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextSceneIndex = currentSceneIndex + 1;
-
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            SceneManager.LoadScene(nextSceneIndex);
-        }
-        else
-        {
-            Debug.Log("No more scenes to load");
-        }
+        Time.timeScale = 1f; //starts time 
+        Cursor.lockState = CursorLockMode.Locked; //the cursor is invisible in the lock state 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitGame()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR //exists out of the unity game window
         UnityEditor.EditorApplication.isPlaying = false;
-#endif
-        Debug.Log("Quitting game");
+#endif // exits game
+
         Application.Quit();
     }
+
+    public void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            Debug.Log("no more Scenes to load");
+            SceneManager.LoadScene("MainMenu");
+        }
+
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+
 }
+

@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 3372414306837750494}
   - component: {fileID: 4965567958553853898}
   - component: {fileID: 4384149419337555245}
+  - component: {fileID: 5331047386824290487}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -329,11 +330,11 @@ MonoBehaviour:
   probeSpherRadius: 0.15
   climbableLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 9
   ObstrutionLayer:
     serializedVersion: 2
     m_Bits: 0
-  ledgeInset: 0.3
+  landingInset: 0.3
   recoverDuration: 0.5
   cooldownDuration: 2
   minTriggerSpeed: 0
@@ -344,6 +345,19 @@ MonoBehaviour:
   mantleClip: {fileID: 7400000, guid: 34ba37a9509674b45a1c6d5f6f8df2d5, type: 2}
   mediumClimbClip: {fileID: 7400000, guid: f716fa40f6fba8542ab0189422098af5, type: 2}
   highClimbClip: {fileID: 7400000, guid: 8572ef7770d94b14fa6afca1f06deec6, type: 2}
+  ledgeStepSize: 0.04
+  ledgeMaxSerch: 0.6
+  ledgeRayHeightAbove: 0.5
+  ledgeRayDistance: 4
+  mantleArkHeight: 0.15
+  climbPhaseSplit: 0.5
+  risePointLift: 0.15
+  landingFinalLift: 0.02
+  standPosLift: 0.05
+  fallbackAnimDuration: 1
+  penetrationResolvePasses: 3
+  penetrationSepartaionBuffer: 0.01
+  verticalCleranceRadiusMult: 0.5
 --- !u!114 &4384149419337555245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,7 +372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WallRun
   wallLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 9
   wallCheckDistance: 1.2
   maxAngleFromParallel: 20
   wallVerticalityTolerance: 10
@@ -372,16 +386,32 @@ MonoBehaviour:
   verifyDistanceMargin: 0.2
   wallNormalSmoothing: 0.25
   wallJumpUpForce: 0.5
-  wallJumpSideForce: 15
+  wallJumpSideForce: 8
   wallJumpForwardForce: 4
   wallJumpAitTime: 0.5
   wallJumpGravity: 0
-  wallJumpCooldown: 0.3
-  wallRunStaminaDrain: 10
+  wallJumpCooldown: 1
+  wallRunStaminaDrain: 15
   wallJumpStaminaCost: 5
   wallRunLeftClip: {fileID: 7400000, guid: f808cd213af53b540a01ac3b6e48bd99, type: 2}
   wallRunRightClip: {fileID: 7400000, guid: 4f91856536990974698ef788d537fb0a, type: 2}
   wallJumpClip: {fileID: 0}
+--- !u!114 &5331047386824290487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410894086415611564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbde1e51085fcb4499389716c4cba1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  hP: 1000000
+  healthText: {fileID: 0}
+  damageText: {fileID: 0}
+  damageDisplayDuration: 1
 --- !u!1001 &3473939034575329046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -471,15 +501,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.20000052
+      value: 0.19999918
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.375
+      value: 1.3750001
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4
+      value: -3.1753478
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalRotation.w
