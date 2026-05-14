@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7326952993478301898}
   - component: {fileID: 7943157399790387594}
-  - component: {fileID: 8193981018502008911}
+  - component: {fileID: 2841626292793978314}
+  - component: {fileID: 3819736988063950636}
   m_Layer: 0
   m_Name: SceneLoader
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b11fcaf52ba010438fbb5fec9671bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
---- !u!114 &8193981018502008911
+--- !u!114 &2841626292793978314
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,3 +61,19 @@ MonoBehaviour:
   gameOverCanvas: {fileID: 0}
   mainCanvas: {fileID: 0}
   pauseCanvas: {fileID: 0}
+--- !u!114 &3819736988063950636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2325570367804919513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1198edad71f47d047bd6b84f1f73a29c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Timer
+  initialTime: 180
+  timerText: {fileID: 0}
+  damageRange: {x: 100000, y: 200000}
+  bleedInterval: 5
