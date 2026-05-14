@@ -26,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (hP <= 0)
         {
-            GetComponent<DeathHandler>().HandleDeath();
+            FindFirstObjectByType<DeathHandler>().HandleDeath();
         }
     }
 

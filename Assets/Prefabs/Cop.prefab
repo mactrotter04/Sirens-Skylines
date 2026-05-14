@@ -1742,7 +1742,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 15
+  m_StoppingDistance: 10
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1763,7 +1763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   chaseramge: 20
-  turnSpeed: 5
+  turnSpeed: 540
   wanderRadius: 100
   minIdleTime: 1
   maxIdleTime: 3
@@ -1847,7 +1847,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  windupTime: 0.8
+  windupTime: 0.2
   jumpHeight: 2
   jumpDuration: 0.5
   windupTurnDegreesPerSecond: 720

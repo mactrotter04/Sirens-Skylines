@@ -35,5 +35,11 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene(nextSceneIndex);
     }
 
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+
 }
 
