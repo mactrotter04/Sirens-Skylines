@@ -29,7 +29,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Gesture
+  m_Name: Waving
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -42,7 +42,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 42443d5a91179304087f36fec771e85f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 4eea91530ba85a044b56712663d9c977, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
