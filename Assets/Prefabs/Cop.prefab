@@ -1764,13 +1764,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   chaseramge: 20
   turnSpeed: 540
-  wanderRadius: 100
-  minIdleTime: 1
-  maxIdleTime: 3
+  wanderRadius: 150
+  minIdleTime: 0.5
+  maxIdleTime: 1
   sampleingDistance: 1
   walkSpeed: 2.5
   chaseSpeed: 6.5
-  damageRange: {x: 40000, y: 120000}
+  damageRange: {x: 40000, y: 100000}
   firePoint: {fileID: 1683551287222107600}
   aimPoint: {fileID: 0}
   lineRenderer: {fileID: 3997227091307403260}

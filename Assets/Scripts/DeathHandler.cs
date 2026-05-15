@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,6 +8,7 @@ public class DeathHandler : MonoBehaviour
     [SerializeField] Canvas gameOverCanvas;
     [SerializeField] Canvas mainCanvas;
     [SerializeField] Canvas pauseCanvas;
+    [SerializeField] TextMeshProUGUI timeCheck;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -50,5 +52,7 @@ public class DeathHandler : MonoBehaviour
         mainCanvas.enabled = true;
         pauseCanvas.enabled = false;
     }
+
+  
 
 }
